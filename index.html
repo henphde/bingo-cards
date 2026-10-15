@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kids Bingo Card Generator</title>
+<title>Kinder-Bingo-Karten-Generator</title>
 <style>
   :root {
     --bg: #fff8ec;
@@ -35,6 +35,12 @@
     border-radius: 10px; background: #fff; color: var(--ink); width: 100%;
   }
   input:disabled { background: #f3efe6; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .lang { display: flex; gap: 0; flex-shrink: 0; }
+  .lang button { padding: 6px 12px; border-radius: 0; font-size: .85rem; }
+  .lang button:first-child { border-radius: 10px 0 0 10px; }
+  .lang button:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
+  .lang button[aria-pressed=true] { background: var(--ink); color: #fff; }
   .check { display: flex; align-items: center; gap: 8px; font-weight: 700; }
   .actions { display: flex; gap: 10px; flex-wrap: wrap; }
   button {
@@ -87,50 +93,56 @@
 <body>
 <div class="app">
   <div class="no-print">
-    <h1>🎲 Kids Bingo Card Generator</h1>
-    <p>5×5 cards with random numbers from 1 to 6. Perfect for a dice game!</p>
+    <div class="topbar">
+      <h1>🎲 <span data-i18n="title"></span></h1>
+      <div class="lang" role="group" aria-label="Language / Sprache">
+        <button type="button" data-lang="de" aria-pressed="true">DE</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+    <p data-i18n="intro"></p>
 
     <div class="controls">
-      <label class="wide">Header (top of every card)
+      <label class="wide"><span data-i18n="header"></span>
         <input type="text" id="header" value="BINGO!" maxlength="40">
       </label>
 
-      <label>Middle field
+      <label><span data-i18n="middle"></span>
         <select id="centerType">
-          <option value="star">★ Star</option>
-          <option value="heart">❤ Heart</option>
-          <option value="smile">😀 Smiley</option>
-          <option value="free">FREE</option>
-          <option value="custom">Custom text / emoji…</option>
+          <option value="star" data-i18n="optStar"></option>
+          <option value="heart" data-i18n="optHeart"></option>
+          <option value="smile" data-i18n="optSmile"></option>
+          <option value="free" data-i18n="optFree"></option>
+          <option value="custom" data-i18n="optCustom"></option>
         </select>
       </label>
-      <label>Custom middle text
-        <input type="text" id="centerText" value="" maxlength="6" placeholder="e.g. 🦄 or Joker" disabled>
+      <label><span data-i18n="customText"></span>
+        <input type="text" id="centerText" value="" maxlength="6" data-i18n-placeholder="customPh" disabled>
       </label>
 
-      <label>Number of cards
+      <label><span data-i18n="count"></span>
         <input type="number" id="count" value="4" min="1" max="60">
       </label>
 
-      <label>Print layout
+      <label><span data-i18n="layout"></span>
         <select id="layout">
-          <option value="1">1 card per page</option>
-          <option value="2">2 cards per page (landscape, side by side)</option>
+          <option value="1" data-i18n="layout1"></option>
+          <option value="2" data-i18n="layout2"></option>
         </select>
       </label>
-      <label>Paper size
+      <label><span data-i18n="paper"></span>
         <select id="paper">
           <option value="A4">A4</option>
-          <option value="Letter">US Letter</option>
+          <option value="Letter" data-i18n="letter"></option>
         </select>
       </label>
-      <label class="check"><input type="checkbox" id="colored" checked> Colored cells (turn off to save ink)</label>
+      <label class="check"><input type="checkbox" id="colored" checked> <span data-i18n="colored"></span></label>
 
-      <label class="check"><input type="checkbox" id="blank"> Blank page after each sheet (for duplex printing)</label>
+      <label class="check"><input type="checkbox" id="blank"> <span data-i18n="blank"></span></label>
 
       <div class="actions wide">
-        <button class="primary" id="generate">🎲 Generate new cards</button>
-        <button id="print">🖨 Print</button>
+        <button class="primary" id="generate">🎲 <span data-i18n="generate"></span></button>
+        <button id="print">🖨 <span data-i18n="print"></span></button>
       </div>
     </div>
   </div>
@@ -141,7 +153,66 @@
 <script>
 (function () {
   const $ = id => document.getElementById(id);
-  const CENTER = { star: '★', heart: '❤', smile: '😀', free: 'FREE' };
+  const I18N = {
+    de: {
+      pageTitle: 'Kinder-Bingo-Karten-Generator',
+      title: 'Kinder-Bingo-Karten-Generator',
+      intro: '5×5-Karten mit Zufallszahlen von 1 bis 6. Perfekt für ein Würfelspiel!',
+      header: 'Überschrift (oben auf jeder Karte)',
+      middle: 'Mittelfeld',
+      optStar: '★ Stern', optHeart: '❤ Herz', optSmile: '😀 Smiley', optFree: 'FREI',
+      optCustom: 'Eigener Text / Emoji…',
+      customText: 'Eigener Text im Mittelfeld',
+      customPh: 'z. B. 🦄 oder Joker',
+      count: 'Anzahl der Karten',
+      layout: 'Druck-Layout',
+      layout1: '1 Karte pro Seite',
+      layout2: '2 Karten pro Seite (Querformat, nebeneinander)',
+      paper: 'Papierformat',
+      letter: 'US Letter',
+      colored: 'Farbige Felder (zum Tintesparen ausschalten)',
+      blank: 'Leere Seite nach jedem Blatt (für Duplexdruck)',
+      generate: 'Neue Karten erzeugen',
+      print: 'Drucken',
+      free: 'FREI'
+    },
+    en: {
+      pageTitle: 'Kids Bingo Card Generator',
+      title: 'Kids Bingo Card Generator',
+      intro: '5×5 cards with random numbers from 1 to 6. Perfect for a dice game!',
+      header: 'Header (top of every card)',
+      middle: 'Middle field',
+      optStar: '★ Star', optHeart: '❤ Heart', optSmile: '😀 Smiley', optFree: 'FREE',
+      optCustom: 'Custom text / emoji…',
+      customText: 'Custom middle text',
+      customPh: 'e.g. 🦄 or Joker',
+      count: 'Number of cards',
+      layout: 'Print layout',
+      layout1: '1 card per page',
+      layout2: '2 cards per page (landscape, side by side)',
+      paper: 'Paper size',
+      letter: 'US Letter',
+      colored: 'Colored cells (turn off to save ink)',
+      blank: 'Blank page after each sheet (for duplex printing)',
+      generate: 'Generate new cards',
+      print: 'Print',
+      free: 'FREE'
+    }
+  };
+  let lang = 'de';
+  try { if (localStorage.getItem('lang') === 'en') lang = 'en'; } catch (e) {}
+  const t = k => I18N[lang][k];
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.title = t('pageTitle');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll('.lang button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  }
+
+  const CENTER = { star: '★', heart: '❤', smile: '😀' };
   let cards = [];   // array of 25-number arrays (index 12 unused)
 
   function randomCard() {
@@ -158,7 +229,7 @@
   function centerValue() {
     const t = $('centerType').value;
     if (t === 'custom') return $('centerText').value.trim() || '★';
-    return CENTER[t];
+    return t === 'free' ? I18N[lang].free : CENTER[t];
   }
 
   function cardEl(nums) {
@@ -240,6 +311,14 @@
   $('generate').addEventListener('click', generate);
   $('print').addEventListener('click', () => window.print());
 
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem('lang', lang); } catch (e) {}
+    applyLang();
+    render();
+  }));
+
+  applyLang();
   generate();
 })();
 </script>
