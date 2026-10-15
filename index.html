@@ -64,10 +64,11 @@
 
   /* ---- cards ---- */
   .sheets { display: grid; gap: 20px; justify-items: center; }
-  .sheet { background: #fff; border: 1px dashed var(--line); padding: 10px; }
-  .slot { display: flex; align-items: center; justify-content: center; }
+  .sheet { background: #fff; border: 1px dashed var(--line); padding: 10px; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .sheets { width: 100%; }
+  .slot { width: min(var(--cardW), 100%); display: flex; align-items: center; justify-content: center; }
   .card {
-    width: var(--cardW); border: 4px solid var(--ink); border-radius: 18px;
+    width: min(var(--cardW), 100%); container-type: inline-size; border: 4px solid var(--ink); border-radius: 18px;
     padding: 4mm; background: #fff;
   }
   .card h2 {
@@ -78,7 +79,7 @@
   .cell {
     aspect-ratio: 1; display: grid; place-items: center;
     border: 2px solid var(--ink); border-radius: 3mm;
-    font-weight: 800; font-size: calc(var(--cardW) / 7); line-height: 1;
+    font-weight: 800; font-size: calc(100cqw / var(--cdiv, 7)); line-height: 1;
     background: #fff; overflow: hidden; text-align: center;
   }
   .colored .n1 { background: var(--c1); } .colored .n2 { background: var(--c2); }
@@ -94,6 +95,7 @@
     .no-print { display: none !important; }
     .app { padding: 0; max-width: none; }
     .sheets { display: block; }
+    .cell { font-size: calc(var(--cardW) / var(--cdiv, 7)); }
     .sheet.blank { display: block; }
     .sheet { border: 0; padding: 0; break-after: page; page-break-after: always; }
     .sheet:last-child { break-after: auto; page-break-after: auto; }
@@ -276,7 +278,7 @@
         c.className = 'cell center';
         const val = centerValue();
         c.textContent = val;
-        if (val.length > 2) c.style.fontSize = `calc(var(--cardW) / ${val.length > 4 ? 14 : 10})`;
+        if (val.length > 2) c.style.setProperty('--cdiv', val.length > 4 ? 14 : 10);
       } else {
         c.className = 'cell n' + v;
         c.textContent = v;
@@ -301,8 +303,10 @@
     // Sheet is 2mm shorter than the printable area so it never spills onto an extra page.
     document.getElementById('pageStyle').textContent =
       `@page { size: ${paper} ${per === 2 ? 'landscape' : 'portrait'}; margin: ${margin}mm; }
-       .sheet { width: ${pw - 2 * margin}mm; height: ${ph - 2 * margin - 2}mm; overflow: hidden; display: flex; }
-       .slot { flex: 1 1 0; min-width: 0; height: 100%; }`;
+       @media print {
+         .sheet { width: ${pw - 2 * margin}mm; height: ${ph - 2 * margin - 2}mm; overflow: hidden; display: flex; flex-wrap: nowrap; gap: 0; }
+         .slot { flex: 1 1 0; min-width: 0; height: 100%; }
+       }`;
 
     const root = $('sheets');
     root.innerHTML = '';
