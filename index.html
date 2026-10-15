@@ -20,7 +20,8 @@
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
   }
-  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  html { font-size: 20px; }
+  h1 { margin: 0 0 4px; font-size: 1.7rem; }
   .app { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
   .controls {
     background: var(--panel); border: 2px solid var(--line); border-radius: 16px;
@@ -29,22 +30,33 @@
     margin-bottom: 20px;
   }
   .controls .wide { grid-column: 1 / -1; }
-  label { display: grid; gap: 4px; font-weight: 700; font-size: .85rem; }
+  label { display: grid; gap: 6px; font-weight: 700; font-size: 1rem; }
   input[type=text], input[type=number], select {
-    font: inherit; font-weight: 400; padding: 8px 10px; border: 2px solid var(--line);
+    font: inherit; font-weight: 400; padding: 12px 12px; min-height: 48px; border: 2px solid var(--line);
     border-radius: 10px; background: #fff; color: var(--ink); width: 100%;
   }
   input:disabled { background: #f3efe6; }
   .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
   .lang { display: flex; gap: 0; flex-shrink: 0; }
-  .lang button { padding: 6px 12px; border-radius: 0; font-size: .85rem; }
+  .lang button { padding: 8px 16px; min-height: 48px; border-radius: 0; font-size: 1rem; }
   .lang button:first-child { border-radius: 10px 0 0 10px; }
   .lang button:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
   .lang button[aria-pressed=true] { background: var(--ink); color: #fff; }
+  .steps { display: grid; gap: 18px; margin-bottom: 14px; }
+  .step { background: var(--panel); border: 2px solid var(--line); border-radius: 16px; padding: 16px; }
+  .step h3 { margin: 0 0 10px; font-size: 1.2rem; }
+  .stepper { display: flex; align-items: center; gap: 14px; }
+  .stepper button { width: 56px; padding: 0; font-size: 1.8rem; line-height: 1; }
+  .stepper input { width: 90px; text-align: center; font-size: 1.6rem; font-weight: 700; }
+  .big { font-size: 1.3rem; width: 100%; padding: 18px; }
+  details.more { background: var(--panel); border: 2px solid var(--line); border-radius: 16px; margin-bottom: 20px; }
+  details.more summary { cursor: pointer; padding: 16px; font-weight: 700; font-size: 1.1rem; }
+  details.more .controls { border: 0; margin: 0; border-top: 2px solid var(--line); border-radius: 0 0 16px 16px; }
+  .check input { width: 26px; height: 26px; flex-shrink: 0; }
   .check { display: flex; align-items: center; gap: 8px; font-weight: 700; }
   .actions { display: flex; gap: 10px; flex-wrap: wrap; }
   button {
-    font: inherit; font-weight: 700; padding: 10px 18px; border-radius: 12px;
+    font: inherit; font-weight: 700; padding: 14px 22px; min-height: 52px; border-radius: 12px;
     border: 2px solid var(--ink); background: #fff; color: var(--ink); cursor: pointer;
   }
   button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -102,7 +114,25 @@
     </div>
     <p data-i18n="intro"></p>
 
-    <div class="controls">
+    <div class="steps">
+      <div class="step">
+        <h3>1. <span data-i18n="step1"></span></h3>
+        <div class="stepper">
+          <button type="button" id="minus" aria-label="−1">−</button>
+          <input type="number" id="count" value="4" min="1" max="60" aria-label="" data-i18n-aria="count">
+          <button type="button" id="plus" aria-label="+1">+</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>2. <span data-i18n="step2"></span></h3>
+        <button class="primary big" id="print">🖨 <span data-i18n="print"></span></button>
+      </div>
+      <button type="button" id="generate">🎲 <span data-i18n="generate"></span></button>
+    </div>
+
+    <details class="more">
+      <summary data-i18n="more"></summary>
+      <div class="controls">
       <label class="wide"><span data-i18n="header"></span>
         <input type="text" id="header" value="BINGO!" maxlength="40">
       </label>
@@ -118,10 +148,6 @@
       </label>
       <label><span data-i18n="customText"></span>
         <input type="text" id="centerText" value="" maxlength="6" data-i18n-placeholder="customPh" disabled>
-      </label>
-
-      <label><span data-i18n="count"></span>
-        <input type="number" id="count" value="4" min="1" max="60">
       </label>
 
       <label><span data-i18n="layout"></span>
@@ -140,11 +166,8 @@
 
       <label class="check"><input type="checkbox" id="blank"> <span data-i18n="blank"></span></label>
 
-      <div class="actions wide">
-        <button class="primary" id="generate">🎲 <span data-i18n="generate"></span></button>
-        <button id="print">🖨 <span data-i18n="print"></span></button>
       </div>
-    </div>
+    </details>
   </div>
 
   <div class="sheets" id="sheets" aria-live="polite"></div>
@@ -157,6 +180,9 @@
     de: {
       pageTitle: 'Kinder-Bingo-Karten-Generator',
       title: 'Kinder-Bingo-Karten-Generator',
+      step1: 'Wie viele Karten?',
+      step2: 'Fertig? Dann ausdrucken:',
+      more: '⚙ Weitere Einstellungen (Überschrift, Mittelfeld, Papier …)',
       intro: '5×5-Karten mit Zufallszahlen von 1 bis 6. Perfekt für ein Würfelspiel!',
       header: 'Überschrift (oben auf jeder Karte)',
       middle: 'Mittelfeld',
@@ -172,13 +198,16 @@
       letter: 'US Letter',
       colored: 'Farbige Felder (zum Tintesparen ausschalten)',
       blank: 'Leere Seite nach jedem Blatt (für Duplexdruck)',
-      generate: 'Neue Karten erzeugen',
+      generate: 'Andere Zahlen würfeln (neue Karten)',
       print: 'Drucken',
       free: 'FREI'
     },
     en: {
       pageTitle: 'Kids Bingo Card Generator',
       title: 'Kids Bingo Card Generator',
+      step1: 'How many cards?',
+      step2: 'Ready? Print them:',
+      more: '⚙ More settings (header, middle field, paper …)',
       intro: '5×5 cards with random numbers from 1 to 6. Perfect for a dice game!',
       header: 'Header (top of every card)',
       middle: 'Middle field',
@@ -194,7 +223,7 @@
       letter: 'US Letter',
       colored: 'Colored cells (turn off to save ink)',
       blank: 'Blank page after each sheet (for duplex printing)',
-      generate: 'Generate new cards',
+      generate: 'Roll different numbers (new cards)',
       print: 'Print',
       free: 'FREE'
     }
@@ -207,6 +236,7 @@
     document.documentElement.lang = lang;
     document.title = t('pageTitle');
     document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
     document.querySelectorAll('.lang button').forEach(b =>
       b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
@@ -308,6 +338,12 @@
     cards.length = n;
     render();
   });
+  function step(d) {
+    $('count').value = Math.max(1, Math.min(60, (parseInt($('count').value, 10) || 1) + d));
+    $('count').dispatchEvent(new Event('change'));
+  }
+  $('minus').addEventListener('click', () => step(-1));
+  $('plus').addEventListener('click', () => step(1));
   $('generate').addEventListener('click', generate);
   $('print').addEventListener('click', () => window.print());
 
